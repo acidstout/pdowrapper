@@ -40,7 +40,7 @@
  * @author nrekow
  * @copyright (C) 2018 Nils Rekow
  * @license GPL-3, http://www.gnu.org/licenses/
- * @version 1.0.1
+ * @version 1.0.1a
  *
  */
 
@@ -200,7 +200,13 @@ class Wrapper extends PDO implements WrapperFunctions {
 		}
 		
 		$obj = $this->stmt->fetchObject();
-		if (is_array($obj) || is_object($obj)) {
+		if (is_object($obj)) {
+			// Convert object to array and preserve nesting.
+			return json_decode(json_encode($obj), true);
+		}
+
+		// TODO: Needs testing.
+		if (is_array($obj)) {
 			return reset($obj);
 		}
 		
