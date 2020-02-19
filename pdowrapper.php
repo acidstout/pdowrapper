@@ -126,6 +126,8 @@ class Wrapper extends PDO implements WrapperFunctions {
 	
 	/**
 	 * Executes statement against database, returns last id on INSERT and row count on UPDATE or DELETE.
+	 * 
+	 * TODO: Allow execution of multiple statements in one query.
 	 *
 	 * @param string $query
 	 * @param array $data
