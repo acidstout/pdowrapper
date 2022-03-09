@@ -17,7 +17,7 @@
  * Usage:
  *
  * 		Establish database connection:
- *			$db = new Database\Wrapper($host, $database, $username, $password);
+ *			$db = new PDO\Wrapper($host, $database, $username, $password);
  *
  *		Fetch data from database:
  *			$sql = "SELECT * FROM users WHERE is_active = 1 ORDER BY surname ASC LIMIT 10;";
@@ -40,7 +40,7 @@
  * @author nrekow
  * @copyright (C) 2018 Nils Rekow
  * @license GPL-3, http://www.gnu.org/licenses/
- * @version 1.0.1a
+ * @version 1.0.2
  *
  */
 
@@ -57,7 +57,7 @@ interface WrapperFunctions {
 	public function getOne($query = null, $data = null);
 	public function getAll($query = null, $data = null);
 	public function getLastId();
-	public function query($query, $data = null);
+	//public function query($query, $data = null);
 }
 
 
@@ -126,7 +126,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	
 	/**
 	 * Executes statement against database, returns last id on INSERT and row count on UPDATE or DELETE.
-	 * 
+	 *
 	 * TODO: Allow execution of multiple statements in one query.
 	 *
 	 * @param string $query
@@ -171,7 +171,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 * @return number
 	 */
 	public function update($query, $data) {
-		$stmt = $this->query($query, $data);
+		$stmt = $this->_query($query, $data);
 		return $stmt->rowCount();
 	}
 	
@@ -184,7 +184,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 * @return number
 	 */
 	public function delete($query, $data) {
-		$stmt = $this->query($query, $data);
+		$stmt = $this->_query($query, $data);
 		return $stmt->rowCount();
 	}
 	
@@ -198,7 +198,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 */
 	public function getOne($query = null, $data = null) {
 		if (!is_null($query) && $query != $this->query) {
-			$this->stmt = $this->query($query, $data);
+			$this->stmt = $this->_query($query, $data);
 		}
 		
 		$obj = $this->stmt->fetchObject();
@@ -206,7 +206,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 			// Convert object to array and preserve nesting.
 			return json_decode(json_encode($obj), true);
 		}
-
+		
 		// TODO: Needs testing.
 		if (is_array($obj)) {
 			return reset($obj);
@@ -225,7 +225,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 */
 	public function getAll($query = null, $data = null) {
 		if (!is_null($query) && $query != $this->query) {
-			$this->stmt = $this->query($query, $data);
+			$this->stmt = $this->_query($query, $data);
 		}
 		
 		return ($this->stmt->fetchAll());
@@ -259,7 +259,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 * @param mixed $data
 	 * @return PDOStatement|boolean
 	 */
-	public function query($query, $data = null) {
+	private function _query($query, $data = null) {
 		if (!is_null($this->connection)) {
 			$this->query = $query;
 			$this->stmt = $this->connection->prepare($query);
