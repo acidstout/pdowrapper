@@ -21,7 +21,7 @@
  *
  *		Fetch data from database:
  *			$sql = "SELECT * FROM users WHERE is_active = 1 ORDER BY surname ASC LIMIT 10;";
- *			$users = $db->getAll();
+ *			$users = $db->getAll($sql);
  *
  *		Iterate over the fetched result:
  *			foreach ($users as $user) {
@@ -40,7 +40,7 @@
  * @author nrekow
  * @copyright (C) 2018 Nils Rekow
  * @license GPL-3, http://www.gnu.org/licenses/
- * @version 1.0.2
+ * @version 1.0.2a
  *
  */
 
@@ -134,7 +134,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 * @return string|boolean
 	 */
 	public function execute($query, $data = null) {
-		if (is_null($this->connection)) {
+		if ( $this->connection === null ) {
 			$this->database_error = 'No database connection.';
 			return false;
 		}
@@ -224,7 +224,7 @@ class Wrapper extends PDO implements WrapperFunctions {
 	 * @return array
 	 */
 	public function getAll($query = null, $data = null) {
-		if (!is_null($query) && $query != $this->query) {
+		if ( $query !== null && $query != $this->query ) {
 			$this->stmt = $this->_query($query, $data);
 		}
 		
